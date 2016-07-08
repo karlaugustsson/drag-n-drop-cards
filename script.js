@@ -70,8 +70,11 @@ window.onload = () => {
 			if(card){
 				let panel = createPanel(form_inputs[0].value,form_inputs[1].value);
 				card.panels.push(panel);
-
+				console.log(form);
+				
 				appendPanelToCardElement(panel,card_el);
+				card_el.removeChild(form.parentNode);
+				card_el.appendChild(form.parentNode);
 				clear_form_inputs(form);				
 			}
 		}	
@@ -79,8 +82,7 @@ window.onload = () => {
 	}
 
 	function appendPanelToCardElement(panel,card_el){
-		let panel_form = card_el.getElementsByClassName("panel form")[0];
-		card_el.removeChild(panel_form);
+
 		let panel_html = document.createElement("div");
 			panel_html.className = "panel";
 
@@ -97,7 +99,7 @@ window.onload = () => {
 			panel_html.appendChild(panel_title_paragraph);
 			panel_html.appendChild(panel_body_paragraph);
 			card_el.appendChild(panel_html);
-			card_el.appendChild(panel_form);
+
 	}
 
 	function appendCardToElement(card,element){
