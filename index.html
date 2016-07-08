@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<style>
+	.card{
+		height: auto;
+		width: 200px;
+		background-color: white;
+		border:1px solid black;
+		display:inline-block;
+		margin:10px;
+	}
+	.hide{
+		display:none;
+	}
+	</style>
+	<script src="script.js"></script>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body style="background-color:yellow;">
+	<form id="card_form" action="">
+		<label for="card_title">
+			title:
+		</label>
+		<input id="card_title" name="title" type="text"  placeholder="title">
+		
+		<textarea id="card_desc" name="desc" id="card_desc" cols="30" rows="10" placeholder="Enter Desc"></textarea>
+		<input type="submit" value="Create card">
+	</form>
+	<div class="card_container">
+	</div>
+</body>
+</html>
