@@ -1,4 +1,4 @@
-window.onload = () => {
+window.addEventListener("load",function() {
 	const card_container = document.getElementsByClassName("card_container")[0];
 	let cardtest = document.getElementsByClassName("card");
 	let dragged_item = null;
@@ -16,7 +16,7 @@ window.onload = () => {
 		cardtest[i].addEventListener("dragenter" , (e) => {hideElementIfNotSameId(dragged_item,e.target)})
 		cardtest[i].addEventListener("dragleave" ,(e)=>{movePlaceholderNextToElement(e)});
 		cardtest[i].addEventListener("dragend" , (e) => { removeClass(e.target,"placeholder")});
-		cardtest[i].addEventListener("drop" , (e) => { dropItemIntoContainer(e,card_container)});
+	
 	}
 	function hideElementIfNotSameId(el1,el2){
 
@@ -78,8 +78,9 @@ window.onload = () => {
 		if(typeof el === "undefined" || !el){
 			return false;
 		}
-		container.appendChild(el);
+		//container.appendChild(el);
 	}
+});
 
 
-}
+
