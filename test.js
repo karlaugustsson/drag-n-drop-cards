@@ -5,13 +5,14 @@ window.onload = () => {
 	let hideElement = el => el.style.display = "none";
 	let hasClass = (el,c) => el.classList.contains(c);
 	let appendClass = (el,c) => el.classList.add(c);
+	let removeClass = (el,c) => el.classList.remove(c);
 
 
 	for(let i  = 0 ; i < cardtest.length ; i++){
 		cardtest[i].addEventListener("dragover",()=>{});
 		cardtest[i].addEventListener("dragstart" , (e) => {startDragging(e,true),appendClass(e.target,"placeholder")});
 		cardtest[i].addEventListener("dragleave" ,()=>{});
-		cardtest[i].addEventListener("dragend" , (e) => { });
+		cardtest[i].addEventListener("dragend" , (e) => { removeClass(e.target,"placeholder")});
 		cardtest[i].addEventListener("drop" , (e) => { dropItemIntoContainer(e,card_container)});
 	}
 	function removeElementsWithClass(c){
