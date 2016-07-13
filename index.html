@@ -3,18 +3,28 @@
 <head>
 	<style>
 	.card{
+		min-height: 200px;
 		height: auto;
 		width: 200px;
+
 		background-color: white;
 		border:1px solid black;
 		display:inline-block;
-		margin:10px;
+		
+	}
+	.card:focus{
+		background-color: red;
 	}
 	.hide{
 		display:none;
 	}
+
+	.placeholder{
+		background-color:transparent;
+		border:2px dashed red; 
+	}
 	</style>
-	<script src="script.js"></script>
+	<script src="test.js"></script>
 	<meta charset="UTF-8">
 	<title>Document</title>
 </head>
@@ -29,6 +39,9 @@
 		<input type="submit" value="Create card">
 	</form>
 	<div class="card_container">
+		<div class="card" draggable="true" id="1"></div>
+		<div class="card" draggable="true" id="2" ></div>
+		<div class="card" draggable="true" id="3" ></div>
 	</div>
 </body>
 </html>

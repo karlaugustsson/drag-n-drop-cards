@@ -5,14 +5,13 @@ window.onload = () => {
 	let card_form = document.forms["card_form"];
 		card_form.addEventListener("submit" , submitNewCard);
 
-	let card_container = document.getElementsByClassName("card_container")[0];
+	const card_container = document.getElementsByClassName("card_container")[0];
 
 
 	// card = createCard("big topic" , "lorem ipsum");
 	// card.panels.push(createPanel("hepp","knapp"));
 
 	function findCardById(id){
-
 			for(var i = 0 ; i <= cards.length ; i++){
 
 				if(cards.id == id ){
@@ -21,7 +20,6 @@ window.onload = () => {
 				}
 			}
 	return false;
-
 	}
 	function findCardElement(el){
 		
