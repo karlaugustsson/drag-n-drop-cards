@@ -12,12 +12,13 @@ window.addEventListener("load",function() {
 
 	for(let i  = 0 ; i < cardtest.length ; i++){
 		cardtest[i].addEventListener("dragover",()=>{});
-		cardtest[i].addEventListener("dragstart" , (e) => {dragged_item = e.target;startDragging(e,true),appendClass(e.target,"placeholder")});
+		cardtest[i].addEventListener("dragstart" , (e) => { dragged_item = e.target;startDragging(e,true),appendClass(e.target,"placeholder")});
 		cardtest[i].addEventListener("dragenter" , (e) => {hideElementIfNotSameId(dragged_item,e.target)})
-		cardtest[i].addEventListener("dragleave" ,(e)=>{movePlaceholderNextToElement(e)});
+		cardtest[i].addEventListener("dragleave" ,(e)=>{movePlaceholderNextToElementVertical(e)});
 		cardtest[i].addEventListener("dragend" , (e) => { removeClass(e.target,"placeholder")});
 	
 	}
+
 	function hideElementIfNotSameId(el1,el2){
 
 		if(!sameId(el1,el2) ){
@@ -25,33 +26,67 @@ window.addEventListener("load",function() {
 		}
 	}
 	function placeElementBefore(el,el2){
+
 		el.parentNode.insertBefore(el,el2);
 	}
 	function placeElementAfter(el,el2){
 		el2.parentNode.insertBefore(el, el2.nextSibling);
 	}
-	function movePlaceholderNextToElement(e){
-		let victim = e.target;
-		victimLeft = victim.offsetLeft;
-		victimRight = victimLeft + victim.offsetWidth;
+	function movePlaceholderNextToElementHorizontaly(e){
+		let placeItemToThisDirection = eventLeftFromThisPosition(e);
+		let element = e.target;
 		
-		if( sameId(victim,dragged_item)){
+		if( sameId(element,dragged_item) || placeItemToThisDirection == "left" || placeItemToThisDirection == "right"){
 			return false;
 		}
 
-		if( Math.abs(victimLeft  - e.clientX) < (victimRight - e.clientX)){
-			placeElementBefore(dragged_item,victim);
-			
-
+		if(	placeItemToThisDirection == "top"){
+			placeElementBefore(dragged_item,element);	
 		}else{
-			placeElementAfter(dragged_item,victim,card_container);
+			placeElementAfter(dragged_item,element);
 		}
+
+		showElement(dragged_item);
+	}
+	function movePlaceholderNextToElementVertical(e){
+		
+		let placeItemToThisDirection = eventLeftFromThisPosition(e);
+		let element = e.target;
+		
+		if( sameId(element,dragged_item) || placeItemToThisDirection == "top" || placeItemToThisDirection == "bottom"){
+			return false;
+		}
+
+		if(	placeItemToThisDirection == "left"){
+			placeElementBefore(dragged_item,element);	
+		}else{
+			placeElementAfter(dragged_item,element);
+		}
+
 		showElement(dragged_item);
 
 	}
+	function eventLeftFromThisPosition(e){
+		let element = e.target;
+		let elementWidth = element.offsetWidth;
+		let elementHeight = element.offsetHeight;
+		let elementLeftPosition = element.offsetLeft;
+		let elementRightPosition = elementLeftPosition + elementWidth;
+		let elementTopPosition = element.offsetTop;
+		let elementBottomPosition = elementTopPosition + elementHeight;
+		
+		let result = [];
+			result.push({position:"left" , numVal:Math.abs(e.clientX - elementLeftPosition)});
+			result.push({position:"right" , numVal:Math.abs(e.clientX - elementRightPosition)});
+			result.push({position:"top" , numVal:Math.abs(e.clientY - elementTopPosition)});
+			result.push({position:"bottom" , numVal:Math.abs(e.clientY - elementBottomPosition)});
+			result = result.reduce((curr,prev) => {return (curr.numVal < prev.numVal)?curr:prev},result[0]).position;
+
+		return result;
+	}
 	function removeElementsWithClass(c){
 		let el = document.getElementsByClassName(c);
-		var elementsLength = clones.length;
+		let elementsLength = clones.length;
 		for (var i = 0; i < elementsLength; i++) {
 			el[0].parentNode.removeChild(el[0])
 		};
@@ -66,6 +101,7 @@ window.addEventListener("load",function() {
 
 	}
 	function startDragging(e,cursorimage){
+		//e.stopPropagation();
 		var element = e.target;
 		if(cursorimage){
 			createDragImage(e);
