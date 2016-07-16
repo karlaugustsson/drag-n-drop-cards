@@ -26,7 +26,7 @@ window.addEventListener("load",function() {
 		paneltest[i].addEventListener("dragstart" , (e) => { e.stopPropagation();drag(e);});
 		paneltest[i].addEventListener("dragenter" , (e) => {e.stopPropagation();})
 		paneltest[i].addEventListener("dragleave" ,(e)=>{appendSiblingHorizontally(e)});
-		paneltest[i].addEventListener("dragend" , (e) => { removeClass(e.currentTarget,"placeholder"),showElement(e.currentTarget);removeElementsWithClass("clone");clearStyle(e)});
+		paneltest[i].addEventListener("dragend" , stopDrag);
 	
 	}
 
@@ -51,6 +51,7 @@ function appendSibling(e){
 		}
 }
 function appendSiblingHorizontally(e){
+
 		let placeItemToThisDirection = mouseCameFromThisPosition(e);
 		let element = e.currentTarget;
 		
@@ -111,8 +112,8 @@ function stopDrag(e){
 		};
 	}
 	function placeElementBefore(el,el2){
-
-		el.parentNode.insertBefore(el,el2);
+	
+		el2.parentNode.insertBefore(el,el2);
 	}
 	function placeElementAfter(el,el2){
 		el2.parentNode.insertBefore(el, el2.nextSibling);
