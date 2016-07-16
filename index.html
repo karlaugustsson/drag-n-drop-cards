@@ -11,6 +11,7 @@
 		border:2px solid black;
 		display:inline-block;
 		margin: 10px;
+		padding:0;
 		
 	}
 	.card:focus{
@@ -26,8 +27,13 @@
 		background-color:transparent !important;
 	}
 	.panel{
+		width: inherit;
+		height:auto;
 		background:purple;
+		float:right;
+	
 	}
+
 	</style>
 	<script src="test.js"></script>
 	<meta charset="UTF-8">
@@ -44,9 +50,21 @@
 		<input type="submit" value="Create card">
 	</form>
 	<div class="card_container">
-		<div class="card" draggable="true" id="1" style="background-color:red;"></div>
-		<div class="card" draggable="true" id="2"  style="background-color:blue;"></div>
-		<div class="card" draggable="true" id="3"  style="background-color:green;">
+		<div class="card" draggable="true" id="card1" style="background-color:red;" data-canbeplaced="outside"></div>
+		<div class="card" draggable="true" id="card2"  style="background-color:blue;" data-canbeplaced="outside">				<div class="panel" draggable="true" id="panel3" data-canbeplaced="inside">
+				<p class="title">karamell</p>
+				<p class="body">godis</p>
+			</div>		
+		</div>
+		<div class="card" draggable="true" id="card3"  style="background-color:green;" data-canbeplaced="outside">
+			<div class="panel" draggable="true" id="panel1" data-canbeplaced="inside">
+				<p class="title">lapp</p>
+				<p class="body">tapp</p>
+			</div>
+			<div class="panel" draggable="true" id="panel2" data-canbeplaced="inside">
+				<p class="title">karamell</p>
+				<p class="body">klapp</p>
+			</div>
 		</div>
 	</div>
 </body>

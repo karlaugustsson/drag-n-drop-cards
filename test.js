@@ -8,22 +8,46 @@ window.addEventListener("load",function() {
 	let appendClass = (el,c) => el.classList.add(c);
 	let removeClass = (el,c) => el.classList.remove(c);
 	let sameId = (el,el2) => {return el.id == el2.id};
-
-
+	let paneltest = document.getElementsByClassName("panel");
+	let preserveOrignalWidth = (e) => { e.currentTarget.style.width = e.currentTarget.offsetWidth + "px"; }
+	let clearStyle = (e) => e.currentTarget.style.width = "";
+	
 	for(let i  = 0 ; i < cardtest.length ; i++){
 		cardtest[i].addEventListener("dragover",()=>{});
-		cardtest[i].addEventListener("dragstart" , (e) => { dragged_item = e.target;startDragging(e,true),appendClass(e.target,"placeholder")});
-		cardtest[i].addEventListener("dragenter" , (e) => {hideElementIfNotSameId(dragged_item,e.target)})
-		cardtest[i].addEventListener("dragleave" ,(e)=>{movePlaceholderNextToElementVertical(e)});
-		cardtest[i].addEventListener("dragend" , (e) => { removeClass(e.target,"placeholder")});
+		cardtest[i].addEventListener("dragstart" , (e) => { dragged_item = e.currentTarget;startDragging(e,true),appendClass(e.currentTarget,"placeholder");preserveOrignalWidth(e);});
+		cardtest[i].addEventListener("dragenter" , (e) => {hideElementIfNotOutside(dragged_item);hideElementIfNotSameId(e.currentTarget,dragged_item);placeItemInside(e)})
+		cardtest[i].addEventListener("dragleave" ,(e)=>{movePlaceholderNextToElement(e)});
+		cardtest[i].addEventListener("dragend" , (e) => { removeClass(e.currentTarget,"placeholder"),showElement(e.currentTarget);removeElementsWithClass("clone");clearStyle(e);});
 	
 	}
 
-	function hideElementIfNotSameId(el1,el2){
+	for(let i  = 0 ; i < paneltest.length ; i++){
+		paneltest[i].addEventListener("dragover",()=>{});
+		paneltest[i].addEventListener("dragstart" , (e) => { e.stopPropagation();dragged_item = e.currentTarget;startDragging(e,true),appendClass(e.currentTarget,"placeholder");;preserveOrignalWidth(e)});
+		paneltest[i].addEventListener("dragenter" , (e) => {e.stopPropagation();})
+		paneltest[i].addEventListener("dragleave" ,(e)=>{movePlaceholderNextToElement2(e)});
+		paneltest[i].addEventListener("dragend" , (e) => { removeClass(e.currentTarget,"placeholder"),showElement(e.currentTarget);removeElementsWithClass("clone");clearStyle(e)});
+	
+	}
+	function placeItemInside(e){
+		element = e.currentTarget;
+		if(dragged_item.dataset.canbeplaced == ("inside" || "booth") ){
+			element.appendChild(dragged_item);
+		}
+		
+	}
+	function hideElementIfNotOutside(el1){
 
-		if(!sameId(el1,el2) ){
+		if(el1.dataset.canbeplaced == "outside" ){
 			hideElement(el1);
 		}
+	}
+	function hideElementIfNotSameId(el1,el2){
+
+		if(!sameId(el1,el2 ) ){
+			hideElement(el1);
+		}
+		showElement(el1)
 	}
 	function placeElementBefore(el,el2){
 
@@ -32,11 +56,13 @@ window.addEventListener("load",function() {
 	function placeElementAfter(el,el2){
 		el2.parentNode.insertBefore(el, el2.nextSibling);
 	}
-	function movePlaceholderNextToElementHorizontaly(e){
-		let placeItemToThisDirection = eventLeftFromThisPosition(e);
-		let element = e.target;
+	function movePlaceholderNextToElement2(e){
 		
-		if( sameId(element,dragged_item) || placeItemToThisDirection == "left" || placeItemToThisDirection == "right"){
+		let placeItemToThisDirection = mouseCameFromThisPosition(e);
+		let element = e.currentTarget;
+		
+		if( sameId(element,dragged_item) || placeItemToThisDirection == "left" || placeItemToThisDirection == "right" || dragged_item.dataset.canbeplaced != "inside" && dragged_item.dataset.canbeplaced != "both" ){
+
 			return false;
 		}
 
@@ -45,15 +71,16 @@ window.addEventListener("load",function() {
 		}else{
 			placeElementAfter(dragged_item,element);
 		}
-
 		showElement(dragged_item);
+
 	}
-	function movePlaceholderNextToElementVertical(e){
+	function movePlaceholderNextToElement(e){
 		
-		let placeItemToThisDirection = eventLeftFromThisPosition(e);
-		let element = e.target;
+		let placeItemToThisDirection = mouseCameFromThisPosition(e);
+		let element = e.currentTarget;
 		
-		if( sameId(element,dragged_item) || placeItemToThisDirection == "top" || placeItemToThisDirection == "bottom"){
+		if( sameId(element,dragged_item) || placeItemToThisDirection == "top" || placeItemToThisDirection == "bottom" || dragged_item.dataset.canbeplaced != "outside" && dragged_item.dataset.canbeplaced != "both" ){
+
 			return false;
 		}
 
@@ -62,12 +89,12 @@ window.addEventListener("load",function() {
 		}else{
 			placeElementAfter(dragged_item,element);
 		}
-
 		showElement(dragged_item);
 
 	}
-	function eventLeftFromThisPosition(e){
-		let element = e.target;
+	function mouseCameFromThisPosition(e){
+		
+		let element = e.currentTarget;
 		let elementWidth = element.offsetWidth;
 		let elementHeight = element.offsetHeight;
 		let elementLeftPosition = element.offsetLeft;
@@ -86,36 +113,34 @@ window.addEventListener("load",function() {
 	}
 	function removeElementsWithClass(c){
 		let el = document.getElementsByClassName(c);
-		let elementsLength = clones.length;
+		let elementsLength = el.length;
+
 		for (var i = 0; i < elementsLength; i++) {
 			el[0].parentNode.removeChild(el[0])
 		};
 	}
 	function createDragImage(e){
-		var clone = e.target.cloneNode();
+
+		var clone = e.currentTarget.cloneNode(true);
+
 		appendClass(clone,"clone");
 		clone.style.position = "absolute";
-		clone.style.left = "-99999999999999999px";
+		clone.style.left = "-999999px";
+
+		clone.style.width = e.currentTarget.offsetWidth + "px";
 		document.body.appendChild(clone);
 		e.dataTransfer.setDragImage(clone,0,0)
 
 	}
 	function startDragging(e,cursorimage){
-		//e.stopPropagation();
-		var element = e.target;
+		
 		if(cursorimage){
+
 			createDragImage(e);
 		}
-		e.dataTransfer.setData("text/plain", element.id);	
+		e.dataTransfer.setData("text/plain", e.currentTarget.id);	
 	}
-	function dropItemIntoContainer(e,container){
-		console.log(e.dataTransfer.getData("text/plain"))
-		let el = document.getElementById(e.dataTransfer.getData("text/plain"));
-		if(typeof el === "undefined" || !el){
-			return false;
-		}
-		//container.appendChild(el);
-	}
+
 });
 
 
