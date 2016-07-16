@@ -1,0 +1,144 @@
+window.addEventListener("load",function() {
+	const card_container = document.getElementsByClassName("card_container")[0];
+	let cardtest = document.getElementsByClassName("card");
+	let dragged_item = null;
+	let hideElement = (el) => appendClass(el,"hide");
+	let showElement = (el) => removeClass(el,"hide");
+	let hasClass = (el,c) => el.classList.contains(c);
+	let appendClass = (el,c) => el.classList.add(c);
+	let removeClass = (el,c) => el.classList.remove(c);
+	let sameId = (el,el2) => {return el.id == el2.id};
+	let paneltest = document.getElementsByClassName("panel");
+	let preserveOrignalWidth = (e) => { e.currentTarget.style.width = e.currentTarget.offsetWidth + "px"; }
+	let clearStyle = (e) => e.currentTarget.style.width = "";
+	
+	for(let i  = 0 ; i < cardtest.length ; i++){
+		cardtest[i].addEventListener("dragover",()=>{});
+		cardtest[i].addEventListener("dragstart" , (e) => { dragged_item = e.currentTarget;startDragging(e,true),appendClass(e.currentTarget,"placeholder");preserveOrignalWidth(e);});
+		cardtest[i].addEventListener("dragenter" , (e) => {hideElementIfNotOutside(dragged_item);hideElementIfNotSameId(e.currentTarget,dragged_item);placeItemInside(e)})
+		cardtest[i].addEventListener("dragleave" ,(e)=>{movePlaceholderNextToElement(e)});
+		cardtest[i].addEventListener("dragend" , (e) => { removeClass(e.currentTarget,"placeholder"),showElement(e.currentTarget);removeElementsWithClass("clone");clearStyle(e);});
+	
+	}
+
+	for(let i  = 0 ; i < paneltest.length ; i++){
+		paneltest[i].addEventListener("dragover",()=>{});
+		paneltest[i].addEventListener("dragstart" , (e) => { e.stopPropagation();dragged_item = e.currentTarget;startDragging(e,true),appendClass(e.currentTarget,"placeholder");;preserveOrignalWidth(e)});
+		paneltest[i].addEventListener("dragenter" , (e) => {e.stopPropagation();})
+		paneltest[i].addEventListener("dragleave" ,(e)=>{movePlaceholderNextToElement2(e)});
+		paneltest[i].addEventListener("dragend" , (e) => { removeClass(e.currentTarget,"placeholder"),showElement(e.currentTarget);removeElementsWithClass("clone");clearStyle(e)});
+	
+	}
+	function placeItemInside(e){
+		element = e.currentTarget;
+		if(dragged_item.dataset.canbeplaced == ("inside" || "booth") ){
+			element.appendChild(dragged_item);
+		}
+		
+	}
+	function hideElementIfNotOutside(el1){
+
+		if(el1.dataset.canbeplaced == "outside" ){
+			hideElement(el1);
+		}
+	}
+	function hideElementIfNotSameId(el1,el2){
+
+		if(!sameId(el1,el2 ) ){
+			hideElement(el1);
+		}
+		showElement(el1)
+	}
+	function placeElementBefore(el,el2){
+
+		el.parentNode.insertBefore(el,el2);
+	}
+	function placeElementAfter(el,el2){
+		el2.parentNode.insertBefore(el, el2.nextSibling);
+	}
+	function movePlaceholderNextToElement2(e){
+		
+		let placeItemToThisDirection = mouseCameFromThisPosition(e);
+		let element = e.currentTarget;
+		
+		if( sameId(element,dragged_item) || placeItemToThisDirection == "left" || placeItemToThisDirection == "right" || dragged_item.dataset.canbeplaced != "inside" && dragged_item.dataset.canbeplaced != "both" ){
+
+			return false;
+		}
+
+		if(	placeItemToThisDirection == "top"){
+			placeElementBefore(dragged_item,element);	
+		}else{
+			placeElementAfter(dragged_item,element);
+		}
+		showElement(dragged_item);
+
+	}
+	function movePlaceholderNextToElement(e){
+		
+		let placeItemToThisDirection = mouseCameFromThisPosition(e);
+		let element = e.currentTarget;
+		
+		if( sameId(element,dragged_item) || placeItemToThisDirection == "top" || placeItemToThisDirection == "bottom" || dragged_item.dataset.canbeplaced != "outside" && dragged_item.dataset.canbeplaced != "both" ){
+
+			return false;
+		}
+
+		if(	placeItemToThisDirection == "left"){
+			placeElementBefore(dragged_item,element);	
+		}else{
+			placeElementAfter(dragged_item,element);
+		}
+		showElement(dragged_item);
+
+	}
+	function mouseCameFromThisPosition(e){
+		
+		let element = e.currentTarget;
+		let elementWidth = element.offsetWidth;
+		let elementHeight = element.offsetHeight;
+		let elementLeftPosition = element.offsetLeft;
+		let elementRightPosition = elementLeftPosition + elementWidth;
+		let elementTopPosition = element.offsetTop;
+		let elementBottomPosition = elementTopPosition + elementHeight;
+		
+		let result = [];
+			result.push({position:"left" , numVal:Math.abs(e.clientX - elementLeftPosition)});
+			result.push({position:"right" , numVal:Math.abs(e.clientX - elementRightPosition)});
+			result.push({position:"top" , numVal:Math.abs(e.clientY - elementTopPosition)});
+			result.push({position:"bottom" , numVal:Math.abs(e.clientY - elementBottomPosition)});
+			result = result.reduce((curr,prev) => {return (curr.numVal < prev.numVal)?curr:prev},result[0]).position;
+
+		return result;
+	}
+	function removeElementsWithClass(c){
+		let el = document.getElementsByClassName(c);
+		let elementsLength = el.length;
+
+		for (var i = 0; i < elementsLength; i++) {
+			el[0].parentNode.removeChild(el[0])
+		};
+	}
+	function createDragImage(e){
+
+		var clone = e.currentTarget.cloneNode(true);
+
+		appendClass(clone,"clone");
+		clone.style.position = "absolute";
+		clone.style.left = "-999999px";
+
+		clone.style.width = e.currentTarget.offsetWidth + "px";
+		document.body.appendChild(clone);
+		e.dataTransfer.setDragImage(clone,0,0)
+
+	}
+	function startDragging(e,cursorimage){
+		
+		if(cursorimage){
+
+			createDragImage(e);
+		}
+		e.dataTransfer.setData("text/plain", e.currentTarget.id);	
+	}
+
+});

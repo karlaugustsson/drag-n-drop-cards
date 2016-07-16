@@ -1,85 +1,45 @@
 window.addEventListener("load",function() {
 	const card_container = document.getElementsByClassName("card_container")[0];
-	let cardtest = document.getElementsByClassName("card");
+	const cards = document.getElementsByClassName("card");
+	const Panels = document.getElementsByClassName("panel")
+	let appendClass = (el,c) => el.classList.add(c);
+	let sameId = (el,el2) => {return el.id == el2.id};
 	let dragged_item = null;
 	let hideElement = (el) => appendClass(el,"hide");
 	let showElement = (el) => removeClass(el,"hide");
 	let hasClass = (el,c) => el.classList.contains(c);
-	let appendClass = (el,c) => el.classList.add(c);
 	let removeClass = (el,c) => el.classList.remove(c);
-	let sameId = (el,el2) => {return el.id == el2.id};
 	let paneltest = document.getElementsByClassName("panel");
 	let preserveOrignalWidth = (e) => { e.currentTarget.style.width = e.currentTarget.offsetWidth + "px"; }
-	let clearStyle = (e) => e.currentTarget.style.width = "";
-	
-	for(let i  = 0 ; i < cardtest.length ; i++){
-		cardtest[i].addEventListener("dragover",()=>{});
-		cardtest[i].addEventListener("dragstart" , (e) => { dragged_item = e.currentTarget;startDragging(e,true),appendClass(e.currentTarget,"placeholder");preserveOrignalWidth(e);});
-		cardtest[i].addEventListener("dragenter" , (e) => {hideElementIfNotOutside(dragged_item);hideElementIfNotSameId(e.currentTarget,dragged_item);placeItemInside(e)})
-		cardtest[i].addEventListener("dragleave" ,(e)=>{movePlaceholderNextToElement(e)});
-		cardtest[i].addEventListener("dragend" , (e) => { removeClass(e.currentTarget,"placeholder"),showElement(e.currentTarget);removeElementsWithClass("clone");clearStyle(e);});
-	
-	}
+	let clearStyle = (e) => e.currentTarget.style = "";
+	let getItemPlacement = (element) => element.dataset.canbeplaced;
 
+	for( let i = 0 ; i < cards.length ; i++ ){
+		cards[i].addEventListener("dragstart",drag);
+		cards[i].addEventListener("dragleave",appendSibling);
+		cards[i].addEventListener("dragend",stopDrag);
+		cards[i].addEventListener("dragenter" , placeItemInside);
+	  
+	}
 	for(let i  = 0 ; i < paneltest.length ; i++){
 		paneltest[i].addEventListener("dragover",()=>{});
-		paneltest[i].addEventListener("dragstart" , (e) => { e.stopPropagation();dragged_item = e.currentTarget;startDragging(e,true),appendClass(e.currentTarget,"placeholder");;preserveOrignalWidth(e)});
+		paneltest[i].addEventListener("dragstart" , (e) => { e.stopPropagation();drag(e);});
 		paneltest[i].addEventListener("dragenter" , (e) => {e.stopPropagation();})
-		paneltest[i].addEventListener("dragleave" ,(e)=>{movePlaceholderNextToElement2(e)});
+		paneltest[i].addEventListener("dragleave" ,(e)=>{appendSiblingHorizontally(e)});
 		paneltest[i].addEventListener("dragend" , (e) => { removeClass(e.currentTarget,"placeholder"),showElement(e.currentTarget);removeElementsWithClass("clone");clearStyle(e)});
 	
 	}
-	function placeItemInside(e){
-		element = e.currentTarget;
-		if(dragged_item.dataset.canbeplaced == ("inside" || "booth") ){
-			element.appendChild(dragged_item);
-		}
-		
-	}
-	function hideElementIfNotOutside(el1){
 
-		if(el1.dataset.canbeplaced == "outside" ){
-			hideElement(el1);
-		}
-	}
-	function hideElementIfNotSameId(el1,el2){
-
-		if(!sameId(el1,el2 ) ){
-			hideElement(el1);
-		}
-		showElement(el1)
-	}
-	function placeElementBefore(el,el2){
-
-		el.parentNode.insertBefore(el,el2);
-	}
-	function placeElementAfter(el,el2){
-		el2.parentNode.insertBefore(el, el2.nextSibling);
-	}
-	function movePlaceholderNextToElement2(e){
-		
+function drag(e){
+	dragged_item = e.currentTarget;
+	createDragImage(e);
+	appendClass(e.currentTarget,"placeholder")
+}
+function appendSibling(e){
 		let placeItemToThisDirection = mouseCameFromThisPosition(e);
 		let element = e.currentTarget;
 		
-		if( sameId(element,dragged_item) || placeItemToThisDirection == "left" || placeItemToThisDirection == "right" || dragged_item.dataset.canbeplaced != "inside" && dragged_item.dataset.canbeplaced != "both" ){
-
-			return false;
-		}
-
-		if(	placeItemToThisDirection == "top"){
-			placeElementBefore(dragged_item,element);	
-		}else{
-			placeElementAfter(dragged_item,element);
-		}
-		showElement(dragged_item);
-
-	}
-	function movePlaceholderNextToElement(e){
-		
-		let placeItemToThisDirection = mouseCameFromThisPosition(e);
-		let element = e.currentTarget;
-		
-		if( sameId(element,dragged_item) || placeItemToThisDirection == "top" || placeItemToThisDirection == "bottom" || dragged_item.dataset.canbeplaced != "outside" && dragged_item.dataset.canbeplaced != "both" ){
+		if( sameId(element,dragged_item) || placeItemToThisDirection == "top" || placeItemToThisDirection == "bottom" || dragged_item.dataset.canbeplaced == "inside"  ){
 
 			return false;
 		}
@@ -89,10 +49,41 @@ window.addEventListener("load",function() {
 		}else{
 			placeElementAfter(dragged_item,element);
 		}
-		showElement(dragged_item);
+}
+function appendSiblingHorizontally(e){
+		let placeItemToThisDirection = mouseCameFromThisPosition(e);
+		let element = e.currentTarget;
+		
+		if( sameId(element,dragged_item) || placeItemToThisDirection == "left" || placeItemToThisDirection == "right" || dragged_item.dataset.canbeplaced == "outside"  ){
+
+			return false;
+		}
+
+		if(	placeItemToThisDirection == "top"){
+			placeElementBefore(dragged_item,element);	
+		}else{
+			placeElementAfter(dragged_item,element);
+		}
+}
+function stopDrag(e){
+	removeElementsWithClassName("clone_drag");
+	removeClass(e.currentTarget,"placeholder");
+
+}
+	function createDragImage(e){
+
+		var clone = e.currentTarget.cloneNode(true);
+
+		appendClass(clone,"clone_drag");
+		clone.style.position = "absolute";
+		clone.style.left = "-999999px";
+
+		clone.style.width = e.currentTarget.offsetWidth + "px";
+		document.body.appendChild(clone);
+		e.dataTransfer.setDragImage(clone,0,0)
 
 	}
-	function mouseCameFromThisPosition(e){
+  	function mouseCameFromThisPosition(e){
 		
 		let element = e.currentTarget;
 		let elementWidth = element.offsetWidth;
@@ -111,7 +102,7 @@ window.addEventListener("load",function() {
 
 		return result;
 	}
-	function removeElementsWithClass(c){
+  	function removeElementsWithClassName(c){
 		let el = document.getElementsByClassName(c);
 		let elementsLength = el.length;
 
@@ -119,28 +110,20 @@ window.addEventListener("load",function() {
 			el[0].parentNode.removeChild(el[0])
 		};
 	}
-	function createDragImage(e){
+	function placeElementBefore(el,el2){
 
-		var clone = e.currentTarget.cloneNode(true);
-
-		appendClass(clone,"clone");
-		clone.style.position = "absolute";
-		clone.style.left = "-999999px";
-
-		clone.style.width = e.currentTarget.offsetWidth + "px";
-		document.body.appendChild(clone);
-		e.dataTransfer.setDragImage(clone,0,0)
-
+		el.parentNode.insertBefore(el,el2);
 	}
-	function startDragging(e,cursorimage){
-		
-		if(cursorimage){
-
-			createDragImage(e);
+	function placeElementAfter(el,el2){
+		el2.parentNode.insertBefore(el, el2.nextSibling);
+	}
+	function placeItemInside(e){
+		element = e.currentTarget;
+		if(dragged_item.dataset.canbeplaced == ("inside" || "both") ){
+			element.appendChild(dragged_item);
 		}
-		e.dataTransfer.setData("text/plain", e.currentTarget.id);	
+		
 	}
-
 });
 
 

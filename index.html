@@ -23,8 +23,11 @@
 
 	.placeholder{
 		background-color:transparent;
-		border:2px dashed red; 
+		border:2px dashed black; 
 		background-color:transparent !important;
+	}
+	.placeholder > div {
+		visibility: hidden;
 	}
 	.panel{
 		width: inherit;
@@ -50,20 +53,27 @@
 		<input type="submit" value="Create card">
 	</form>
 	<div class="card_container">
-		<div class="card" draggable="true" id="card1" style="background-color:red;" data-canbeplaced="outside"></div>
-		<div class="card" draggable="true" id="card2"  style="background-color:blue;" data-canbeplaced="outside">				<div class="panel" draggable="true" id="panel3" data-canbeplaced="inside">
-				<p class="title">karamell</p>
-				<p class="body">godis</p>
+		<div class="card" draggable="true" id="card1"  data-canbeplaced="outside"></div>
+		<div class="card" draggable="true" id="card2"   data-canbeplaced="outside">				<div class="panel" draggable="true" id="panel3" data-canbeplaced="inside">
+				<div class="inner">
+					<p class="title">karamell</p>
+					<p class="body">klapp</p>	
+				</div>
 			</div>		
 		</div>
-		<div class="card" draggable="true" id="card3"  style="background-color:green;" data-canbeplaced="outside">
+		<div class="card" draggable="true" id="card3"   data-canbeplaced="outside">
 			<div class="panel" draggable="true" id="panel1" data-canbeplaced="inside">
-				<p class="title">lapp</p>
-				<p class="body">tapp</p>
+				<div class="inner">
+					<p class="title">karamell</p>
+					<p class="body">klapp</p>	
+				</div>
 			</div>
 			<div class="panel" draggable="true" id="panel2" data-canbeplaced="inside">
-				<p class="title">karamell</p>
-				<p class="body">klapp</p>
+				<div class="inner">
+					<p class="title">karamell</p>
+					<p class="body">klapp</p>	
+				</div>
+
 			</div>
 		</div>
 	</div>
